@@ -14,6 +14,7 @@ import (
 )
 
 func main() {
+	fmt.Println("Starting PVC Resizer...")
 	flag.Parse()
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -32,7 +33,6 @@ func main() {
 		for _, pvc := range pvcs.Items {
 			// Simulate checking usage (in real case, you'd get metrics from cAdvisor/Prometheus)
 			usagePercent := simulateStorageUsage(pvc.Name)
-
 			if usagePercent > 80 {
 				fmt.Printf("PVC %s/%s is %d%% full. Resizing...\n", pvc.Namespace, pvc.Name, usagePercent)
 				newSize := "2Gi" // hardcoded for simplicity
