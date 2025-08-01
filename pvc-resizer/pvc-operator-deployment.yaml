@@ -1,0 +1,50 @@
+# pvc-operator-deployment.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pvc-operator
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pvc-operator
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "update"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pvc-operator
+subjects:
+  - kind: ServiceAccount
+    name: pvc-operator
+    namespace: default
+roleRef:
+  kind: ClusterRole
+  name: pvc-operator
+  apiGroup: rbac.authorization.k8s.io
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pvc-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pvc-operator
+  template:
+    metadata:
+      labels:
+        app: pvc-operator
+    spec:
+      serviceAccountName: pvc-operator
+      containers:
+        - name: pvc-operator
+          image: pvc-operator:latest
+          imagePullPolicy: Never
